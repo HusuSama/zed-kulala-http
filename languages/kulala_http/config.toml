@@ -1,0 +1,3 @@
+name = "kulala_http"
+grammar = "kulala_http"
+path_suffixes = ["http"]

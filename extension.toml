@@ -1,0 +1,15 @@
+id = "kulala-http"
+name = "Kulala HTTP"
+version = "0.0.1"
+schema_version = 1
+authors = ["HusuSama <hususama@foxmail.com>"]
+description = "A Kulala extension for HTTP requests"
+repository = "https://github.com/HusuSama/zed-kulala-http"
+
+[grammars.kulala_http]
+repository = "https://github.com/HusuSama/tree-sitter-kulala-http"
+rev = "main"
+
+[language_servers.kulala_http]
+name = "Kulala HTTP"
+languages = ["kulala_http"]
