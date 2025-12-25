@@ -1,7 +1,9 @@
 <div align="center">
+
 ![Kulala Logo](logo.svg)
 # zed-kulala-http
 An unofficial extension for Kulala, adding support for the Zed editor. Visit the [Kulala repository](https://github.com/mistweaverco/kulala.nvim) to unlock a whole new world!
+
 </div>
 
 ## Features
