@@ -1,5 +1,6 @@
 use zed_extension_api::{self as zed, LanguageServerInstallationStatus, settings::LspSettings};
 
+const KULALA_SERVER_NAME: &str = "kulala-ls";
 const KULALA_PACKAGE_NAME: &str = "@mistweaverco/kulala-ls";
 const WINDOWS_BINARY_NAME: &str = "kulala-ls.cmd";
 const DEFAULT_BINARY_NAME: &str = "kulala-ls";
@@ -28,7 +29,7 @@ impl zed::Extension for KulalaHTTP {
         let (platform, _) = zed::current_platform();
         self.set_binary_name(platform);
 
-        if let Ok(lsp_settings) = LspSettings::for_worktree("kulala-ls", _worktree) {
+        if let Ok(lsp_settings) = LspSettings::for_worktree(KULALA_SERVER_NAME, _worktree) {
             if let Some(binary) = lsp_settings.binary {
                 if let Some(path) = binary.path {
                     let args = binary.arguments.unwrap_or(vec!["--stdio".to_string()]);

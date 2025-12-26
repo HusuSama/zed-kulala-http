@@ -10,6 +10,6 @@ repository = "https://github.com/HusuSama/zed-kulala-http"
 repository = "https://github.com/HusuSama/tree-sitter-kulala-http"
 rev = "main"
 
-[language_servers.kulala_http]
+[language_servers.kulala-http]
 name = "Kulala HTTP"
-languages = ["kulala_http"]
+languages = ["kulala-http"]
