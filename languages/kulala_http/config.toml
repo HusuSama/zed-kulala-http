@@ -1,3 +1,10 @@
-name = "kulala_http"
+name = "kulala-http"
 grammar = "kulala_http"
 path_suffixes = ["http"]
+autoclose_before = ";:.,=})"
+
+brackets  = [
+{ start = "\"", end = "\"", close = true, newline = false},
+{ start = "{", end = "}", close = true, newline = false},
+{ start = "[", end = "]", close = true, newline = false},
+]

@@ -1,6 +1,0 @@
-@URL = http://httpbin.org
-
-### Test Completion
-
-POST {{URL}}/get?id=1 HTTP/1.1
-Content-Type: application/json

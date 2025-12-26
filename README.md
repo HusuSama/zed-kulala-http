@@ -27,14 +27,11 @@ An unofficial extension for Kulala, adding support for the Zed editor. Visit the
 
 ## Usage
 
+- LSP
+
 In most cases, you don't need to configure anything and can start using it right away. If the executable isn't found, you can specify its path in your settings.json file.
 
 ```json
-"languages": {
-  "http": {
-    "language_servers": ["kulala-ls"],
-  },
-},
 "lsp": {
   "kulala-ls": {
     "binary": {
@@ -44,6 +41,32 @@ In most cases, you don't need to configure anything and can start using it right
   },
 }
 ```
+
+- Formatting
+
+To format HTTP files, you need to install kulala-fmt. Install it using the command below:
+
+```bash
+npm install -g @mistweaverco/kulala-fmt
+```
+
+In your `settings.json` file, add the following configuration. Note that you need to update the command path to match your local setup:
+
+```json
+"languages": {
+  "kulala-http": {
+    "formatter": {
+      "external": {
+        "command": "D:\\nodejs\\kulala-fmt.cmd",
+        "arguments": ["format", "--stdin", "{buffer_path}"],
+      },
+    },
+    "format_on_save": "on",
+  },
+},
+```
+
+- Request
 
 To send HTTP requests, you need to use either `httpyac` or `kulala_cli`. Currently, `kulala_cli` is only supported when `Neovim (nvim)` is installed. A standalone version of `kulala_cli` is under development. If you already have Neovim, we recommend using `kulala_cli` for better compatibility.
 
