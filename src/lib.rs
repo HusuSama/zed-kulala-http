@@ -1,7 +1,9 @@
+use std::env;
 use zed_extension_api::{self as zed, LanguageServerInstallationStatus, settings::LspSettings};
 
 const KULALA_SERVER_NAME: &str = "kulala-ls";
 const KULALA_PACKAGE_NAME: &str = "@mistweaverco/kulala-ls";
+const KULALA_SERVER_PATH: &str = "node_modules/@mistweaverco/kulala-ls/cli.cjs";
 const WINDOWS_BINARY_NAME: &str = "kulala-ls.cmd";
 const DEFAULT_BINARY_NAME: &str = "kulala-ls";
 
@@ -29,41 +31,44 @@ impl zed::Extension for KulalaHTTP {
         let (platform, _) = zed::current_platform();
         self.set_binary_name(platform);
 
-        if let Ok(lsp_settings) = LspSettings::for_worktree(KULALA_SERVER_NAME, _worktree) {
-            if let Some(binary) = lsp_settings.binary {
-                if let Some(path) = binary.path {
-                    let args = binary.arguments.unwrap_or(vec!["--stdio".to_string()]);
-                    return Ok(zed::Command {
-                        command: path,
-                        args,
-                        env,
-                    });
-                }
-            }
+        // Check for user-configured binary path
+        if let Ok(lsp_settings) = LspSettings::for_worktree(KULALA_SERVER_NAME, _worktree)
+            && let Some(binary) = lsp_settings.binary
+            && let Some(path) = binary.path
+        {
+            let args = binary
+                .arguments
+                .unwrap_or_else(|| vec!["--stdio".to_string()]);
+            return Ok(zed::Command {
+                command: path,
+                args,
+                env,
+            });
         }
 
-        // If kulala-ls is not in $PATH, it will be automatically installed via npm.
-        let install_result = self.install_kulala_ls(_language_server_id, _worktree);
-        if !install_result {
-            return Err(format!(
-                "{} is not in your $PATH. Attempting to install via npm failed—please install it manually and configure this service.",
-                self.binary_name
-            )
-            .to_string());
+        // Check if binary exists in PATH
+        if let Some(path) = _worktree.which(&self.binary_name) {
+            return Ok(zed::Command {
+                command: path,
+                args: vec!["--stdio".to_string()],
+                env,
+            });
         }
 
-        let path = _worktree.which(&self.binary_name).ok_or_else(|| {
-            format!(
-                "{} must be installed and available in $PATH.",
-                self.binary_name
-            )
-            .to_string()
-        })?;
+        // Install via npm and use Zed's Node runtime
+        self.install_kulala_ls(_language_server_id)?;
+
+        let node_path = zed::node_binary_path()?;
+        let server_path = env::current_dir()
+            .unwrap()
+            .join(KULALA_SERVER_PATH)
+            .to_string_lossy()
+            .to_string();
 
         Ok(zed::Command {
-            command: path,
-            args: vec!["--stdio".to_string(), Default::default()],
-            env: env,
+            command: node_path,
+            args: vec![server_path, "--stdio".to_string()],
+            env,
         })
     }
 }
@@ -76,40 +81,43 @@ impl KulalaHTTP {
         }
     }
 
-    /// Install kulala-ls if it is not already installed.
-    /// If kulala-ls is not in $PATH, it will be installed using npm.
+    /// Install kulala-ls via npm if not already installed or version is outdated.
     fn install_kulala_ls(
         &self,
         language_server_id: &zed::LanguageServerId,
-        worktree: &zed::Worktree,
-    ) -> bool {
-        if let None = worktree.which(&self.binary_name) {
+    ) -> zed_extension_api::Result<()> {
+        let latest_version = zed::npm_package_latest_version(KULALA_PACKAGE_NAME)?;
+        let installed_version = zed::npm_package_installed_version(KULALA_PACKAGE_NAME)?;
+
+        if installed_version.as_deref() != Some(latest_version.as_ref()) {
             zed::set_language_server_installation_status(
                 language_server_id,
                 &LanguageServerInstallationStatus::Downloading,
             );
-            let version = if let Ok(version) = zed::npm_package_latest_version(KULALA_PACKAGE_NAME)
-            {
-                version
-            } else {
-                "".to_string()
-            };
-            if let Err(err) = zed::npm_install_package(KULALA_PACKAGE_NAME, &version) {
+
+            if let Err(err) = zed::npm_install_package(KULALA_PACKAGE_NAME, &latest_version) {
                 zed::set_language_server_installation_status(
-                        language_server_id,
-                        &LanguageServerInstallationStatus::Failed(
-                            format!("Failed to download kulala-ls via npm. Please try installing it manually. Error: {}", err)
-                                .to_string(),
-                        ),
-                    );
-                return false;
+                    language_server_id,
+                    &LanguageServerInstallationStatus::Failed(
+                        format!(
+                            "Failed to download kulala-ls via npm. Please try installing it manually. Error: {}",
+                            err
+                        )
+                        .to_string(),
+                    ),
+                );
+                return Err(format!(
+                    "Failed to install {}: {}",
+                    KULALA_PACKAGE_NAME, err
+                ));
             }
         }
+
         zed::set_language_server_installation_status(
             language_server_id,
             &LanguageServerInstallationStatus::None,
         );
-        return true;
+        Ok(())
     }
 }
 
