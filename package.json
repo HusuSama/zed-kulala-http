@@ -1,0 +1,19 @@
+{
+  "name": "kulala-http",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LSP relay service: translates protocol between Zed and kulala-core",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "@mistweaverco/kulala-core": "^0.26.0"
+  }
+}

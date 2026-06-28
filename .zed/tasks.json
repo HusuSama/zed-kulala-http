@@ -1,0 +1,16 @@
+[
+  {
+    "label": "Kulala: Run in Terminal",
+    "command": "node",
+    "args": [
+      "\"/Users/bytedance/Library/Application Support/Zed/extensions/work/kulala-http/dist/cli.cjs\"",
+      "run",
+      "$ZED_FILE",
+      "$ZED_ROW",
+    ],
+    "tags": ["kulala-http-request"],
+    "reveal": "always",
+    "allow_concurrent_runs": true,
+    "use_new_terminal": true,
+  },
+]

@@ -1,15 +1,17 @@
 id = "kulala-http"
 name = "Kulala HTTP"
-version = "0.0.1"
+version = "1.0.0"
 schema_version = 1
 authors = ["HusuSama <hususama@foxmail.com>"]
-description = "A Kulala extension for HTTP requests"
+description = "A Zed editor extension for Kulala, supporting core features such as http/rest completion, js/ts scripts, and dependency-free requests"
 repository = "https://github.com/HusuSama/zed-kulala-http"
+languages = ["languages/kulala_http"]
 
 [grammars.kulala_http]
-repository = "https://github.com/HusuSama/tree-sitter-kulala-http"
-rev = "main"
+repository = "https://github.com/mistweaverco/tree-sitter-kulala-http"
+# repository = "https://github.com/HusuSama/tree-sitter-kulala-http"
+rev = "f3d0d7a949e620dfeb1522f9cd220a4fc6184f1e"
 
-[language_servers.kulala-http]
+[language_servers.kulala-ls]
 name = "Kulala HTTP"
 languages = ["kulala-http"]

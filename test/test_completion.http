@@ -1,1 +1,8 @@
+### Query params - basic
 
+GET https://httpbin.org/get?name=John
+  &age=30 HTTP/1.1
+
+### Query params - single digit value
+
+GET https://httpbin.org/get?id=1 HTTP/1.1
